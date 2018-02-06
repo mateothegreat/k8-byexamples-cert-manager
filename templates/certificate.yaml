@@ -1,0 +1,22 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: gcp.streaming-platform.com
+  namespace: testing
+spec:
+  secretName: tls-gcp.streaming-platform.com
+  issuerRef:
+    name: letsencrypt-staging
+  commonName: gcp.streaming-platform.com
+  dnsNames:
+  - ingress.gcp.streaming-platform.com
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - gcp.streaming-platform.com
+    - http01:
+        ingress: staticip
+      domains:
+      - ingress.gcp.streaming-platform.com
