@@ -10,12 +10,14 @@ NS              ?= testing
 APP             ?= cert-manager
 export
 
-## Install all resources
+## Install resources to deploy cert-manager
 install:    install-certificate-crd install-clusterissuer-crd install-issuer-crd install-rbac install-deployment
-## Delete all resources
+## Delete all resources needed for cert-manager
 delete:     delete-certificate-crd delete-clusterissuer-crd delete-issuer-crd delete-rbac delete-deployment
 ## Get rollout status (Watch until complete)
 status:     status-deployment
+## Output all specs from the manifests directory (yaml)
+dump:       dump-certificate-crd dump-clusterissuer-crd dump-issuer-crd dump-rbac dump-deployment
 
 # LIB
 install-%:
