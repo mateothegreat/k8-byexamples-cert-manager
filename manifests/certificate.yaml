@@ -1,22 +1,22 @@
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: gcp.streaming-platform.com
-  namespace: testing
+  name: $HOST
+  namespace: $NS
 spec:
-  secretName: tls-gcp.streaming-platform.com
+  secretName: tls-$HOST
   issuerRef:
     name: letsencrypt-staging
-  commonName: gcp.streaming-platform.com
+  commonName: $HOST
   dnsNames:
-  - ingress.gcp.streaming-platform.com
+  - $HOST
   acme:
     config:
     - http01:
         ingressClass: nginx
       domains:
-      - gcp.streaming-platform.com
+      - $HOST
     - http01:
         ingress: staticip
       domains:
-      - ingress.gcp.streaming-platform.com
+      - $HOST

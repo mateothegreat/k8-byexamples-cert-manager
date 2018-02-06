@@ -33,11 +33,34 @@ Targets:
   delete               Delete all resources needed for cert-manager
 
   status               Get rollout status (Watch until complete)
-
   dump                 Output all specs from the manifests directory (yaml)
   logs                 Find first pod and follow log output
+
+  cert                 Generate Certificate request (make cert NS=somenamespace HOST=foo.bar.com)
 ```
 
+## Creating new Certificates
+
+Create a Certificate resource (see templates directory) via `make cert NS=somenamespace HOST=foo.bar.com`.
+You can use `make logs` to follow the log output from the cert-manager pod and follow the action.
+
+Example:
+
+````sh
+$ make cert NS=testing HOST=staticip.gcp.streaming-platform.com
+
+certificate "staticip.gcp.streaming-platform.com" create
+
+$ make logs
+
+...
+I0206 12:17:28.294092       1 controller.go:187] certificates controller: syncing item 'testing/staticip.gcp.streaming-platform.com'
+I0206 12:17:28.294270       1 sync.go:107] Error checking existing TLS certificate: secret "tls-staticip.gcp.streaming-platform.com" not found
+I0206 12:17:28.294342       1 sync.go:238] Preparing certificate with issuer
+I0206 12:17:28.294844       1 prepare.go:239] Compare "" with "https://acme-v01.api.letsencrypt.org/acme/reg/28937938"
+...
+
+```
 ## Dump
 
 ```sh
@@ -186,4 +209,4 @@ spec:
             requests:
               cpu: 10m
               memory: 32Mi
-```
+````
