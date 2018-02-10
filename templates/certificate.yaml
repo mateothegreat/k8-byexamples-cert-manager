@@ -17,6 +17,6 @@ spec:
       domains:
       - $HOST
     - http01:
-        ingress: staticip
+        ingress: ingress-svc
       domains:
       - $HOST

@@ -5,55 +5,15 @@
 #  \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
 # /____                     matthewdavis.io, holla!
 #
+include .make/Makefile.inc
 
-NS              ?= testing
+NS              ?= default
 APP             ?= cert-manager
+HOST            ?= k8.yomateo.io
 export
 
-## Install resources to deploy cert-manager
-install:    install-certificate-crd install-clusterissuer-crd install-issuer-crd install-rbac install-deployment install-issuer
-## Delete all resources needed for cert-manager
-delete:     delete-certificate-crd delete-clusterissuer-crd delete-issuer-crd delete-rbac delete-deployment delete-issuer
-## Get rollout status (Watch until complete)
-status:     status-deployment
-## Output all specs from the manifests directory (yaml)
-dump:       dump-certificate-crd dump-clusterissuer-crd dump-issuer-crd dump-rbac dump-deployment
+logs: ;	kubectl --namespace $(NS) logs -f $(shell kubectl get pods --all-namespaces -lapp=$(APP) -o jsonpath='{.items[0].metadata.name}') -c cert-manager
 
-## Generate Certificate request (make cert NS=somenamespace HOST=foo.bar.com)
-cert:       install-certificate
+new:
 
-# LIB
-install-%:
-	@envsubst < manifests/$*.yaml | kubectl --namespace $(NS) apply -f -
-
-delete-%:
-	@envsubst < manifests/$*.yaml | kubectl --namespace $(NS) delete --ignore-not-found -f -
-
-status-%:
-	@envsubst < manifests/$*.yaml | kubectl --namespace $(NS) rollout status -w -f -
-
-dump-%:
-	envsubst < manifests/$*.yaml
-## Find first pod and follow log output
-logs:
-	kubectl --namespace $(NS) logs -f $(shell kubectl get pods --all-namespaces -lapp=$(APP) -o jsonpath='{.items[0].metadata.name}') -c cert-manager
-
-# Help Outputs
-GREEN  		:= $(shell tput -Txterm setaf 2)
-YELLOW 		:= $(shell tput -Txterm setaf 3)
-WHITE  		:= $(shell tput -Txterm setaf 7)
-RESET  		:= $(shell tput -Txterm sgr0)
-help:
-
-	@echo "\nUsage:\n\n  ${YELLOW}make${RESET} ${GREEN}<target>${RESET}\n\nTargets:\n"
-	@awk '/^[a-zA-Z\-\_0-9]+:/ { \
-		helpMessage = match(lastLine, /^## (.*)/); \
-		if (helpMessage) { \
-			helpCommand = substr($$1, 0, index($$1, ":")-1); \
-			helpMessage = substr(lastLine, RSTART + 3, RLENGTH); \
-			printf "  ${YELLOW}%-20s${RESET} ${GREEN}%s${RESET}\n", helpCommand, helpMessage; \
-		} \
-	} \
-	{ lastLine = $$0 }' $(MAKEFILE_LIST)
-	@echo
-# EOLIB
+	@envsubst < templates/certificate.yaml | kubectl -n $$NS apply -f -
