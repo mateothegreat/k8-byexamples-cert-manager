@@ -15,6 +15,8 @@
 
 > k8 by example -- straight to the point, simple execution.
 
+Certificate management as easy as a spec. Goes well with https://github.com/mateothegreat/k8-byexamples-ingress-controller.
+
 ## Usage
 
 Run `make install` and you're ready to start creating certificate requests.
@@ -210,3 +212,7 @@ spec:
               cpu: 10m
               memory: 32Mi
 ````
+
+## See also
+
+* https://github.com/mateothegreat/k8-byexamples-ingress-controller
