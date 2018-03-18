@@ -6,9 +6,6 @@ metadata:
   name: clusterissuers.certmanager.k8s.io
   labels:
     app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
 spec:
   group: certmanager.k8s.io
   version: v1alpha1

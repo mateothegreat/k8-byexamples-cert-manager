@@ -6,9 +6,6 @@ metadata:
   name: cert-manager
   labels:
     app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
 spec:
   replicas: 1
   template:

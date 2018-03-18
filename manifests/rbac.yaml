@@ -6,9 +6,6 @@ metadata:
   name: cert-manager
   labels:
     app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
 rules:
   - apiGroups: ["certmanager.k8s.io"]
     resources: ["certificates", "issuers", "clusterissuers"]
@@ -26,9 +23,6 @@ metadata:
   name: cert-manager
   labels:
     app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -44,6 +38,3 @@ metadata:
   name: cert-manager
   labels:
     app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
