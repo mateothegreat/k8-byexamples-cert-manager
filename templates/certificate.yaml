@@ -6,7 +6,8 @@ metadata:
 spec:
   secretName: tls-$HOST
   issuerRef:
-    name: letsencrypt-staging
+    name: letsencrypt-staging-cluster-issuer
+    kind: ClusterIssuer
   commonName: $HOST
   dnsNames:
   - $HOST

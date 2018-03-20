@@ -7,9 +7,10 @@
 #
 include .make/Makefile.inc
 
-NS              ?= default
+NS              ?= kube-system
 APP             ?= cert-manager
 HOST            ?= k8.yomateo.io
+EMAIL           ?= matthew@matthewdavis.io
 export
 
 logs: ;	kubectl --namespace $(NS) logs -f $(shell kubectl get pods --all-namespaces -lapp=$(APP) -o jsonpath='{.items[0].metadata.name}') -c cert-manager
