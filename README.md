@@ -28,20 +28,42 @@ See the templates directory for certificate examples.
 ```sh
 $ make help
 
-Usage:
+                                __                 __
+   __  ______  ____ ___  ____ _/ /____  ____  ____/ /
+  / / / / __ \/ __  __ \/ __  / __/ _ \/ __ \/ __  /
+ / /_/ / /_/ / / / / / / /_/ / /_/  __/ /_/ / /_/ /
+ \__, /\____/_/ /_/ /_/\__,_/\__/\___/\____/\__,_/
+/____
+                        yomateo.io, it ain't easy.
 
-  make <target>
+Usage: make <target(s)>
 
 Targets:
 
-  install              Install resources to deploy cert-manager
-  delete               Delete all resources needed for cert-manager
+  certificate-issue    Creates a new Certificate request (make certificate-issue NS=somenamespace HOST=foo.bar.com)
+  certificate-delete   Deletes Certificate request (make certificate-issue NS=somenamespace HOST=foo.bar.com)
+  dump/submodules      Output list of submodules & repositories
+  install              Installs manifests to kubernetes using kubectl apply (make manifests to see what will be installed)
+  delete               Deletes manifests to kubernetes using kubectl delete (make manifests to see what will be installed)
+  get                  Retrieves manifests to kubernetes using kubectl get (make manifests to see what will be installed)
+  get/all              Retrives all resources (in color!)
+  describe             Describes manifests to kubernetes using kubectl describe (make manifests to see what will be installed)
+  context              Globally set the current-context (default namespace)
+  shell                Grab a shell in a running container
+  dump/logs            Find first pod and follow log output
+  dump/manifests       Output manifests detected (used with make install, delete, get, describe, etc)
 
-  status               Get rollout status (Watch until complete)
-  dump                 Output all specs from the manifests directory (yaml)
-  logs                 Find first pod and follow log output
 
-  cert                 Generate Certificate request (make cert NS=somenamespace HOST=foo.bar.com)
+Tools:
+
+  get/myip              Get your external ip
+  testing-curl          Try to curl http & https from $(HOST)
+  testing/curlhttp      Try to curl http://$(HOST)
+  testing/curlhttps     Try to curl https://$(HOST)
+  testing/getip         Retrieve external IP from api.ipify.org
+  git/update            Update submodule(s) to HEAD from origin
+  git/up                Update all .make submodules
+  rbac/grant-google     Create clusterrolebinding for cluster-admin
 ```
 
 ## Creating new Certificates
@@ -52,11 +74,9 @@ You can use `make logs` to follow the log output from the cert-manager pod and f
 Example:
 
 ````sh
-$ make cert NS=testing HOST=staticip.gcp.streaming-platform.com
+$ make certificate-issue NS=testing HOST=staticip.gcp.streaming-platform.com
 
-certificate "staticip.gcp.streaming-platform.com" create
-
-$ make logs
+certificate "staticip.gcp.streaming-platform.com" created
 
 ...
 I0206 12:17:28.294092       1 controller.go:187] certificates controller: syncing item 'testing/staticip.gcp.streaming-platform.com'
@@ -64,158 +84,3 @@ I0206 12:17:28.294270       1 sync.go:107] Error checking existing TLS certifica
 I0206 12:17:28.294342       1 sync.go:238] Preparing certificate with issuer
 I0206 12:17:28.294844       1 prepare.go:239] Compare "" with "https://acme-v01.api.letsencrypt.org/acme/reg/28937938"
 ...
-
-```
-## Dump
-
-```sh
-$ make dump
-envsubst < manifests/certificate-crd.yaml
-##---
-# Source: cert-manager/templates/certificate-crd.yaml
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: certificates.certmanager.k8s.io
-  labels:
-    app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
-spec:
-  group: certmanager.k8s.io
-  version: v1alpha1
-  names:
-    kind: Certificate
-    plural: certificates
-  scope: Namespaced
-envsubst < manifests/clusterissuer-crd.yaml
-##---
-# Source: cert-manager/templates/clusterissuer-crd.yaml
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: clusterissuers.certmanager.k8s.io
-  labels:
-    app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
-spec:
-  group: certmanager.k8s.io
-  version: v1alpha1
-  names:
-    kind: ClusterIssuer
-    plural: clusterissuers
-  scope: Cluster
-envsubst < manifests/issuer-crd.yaml
-##---
-# Source: cert-manager/templates/issuer-crd.yaml
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: issuers.certmanager.k8s.io
-  labels:
-    app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
-spec:
-  group: certmanager.k8s.io
-  version: v1alpha1
-  names:
-    kind: Issuer
-    plural: issuers
-  scope: Namespaced
-envsubst < manifests/rbac.yaml
-##---
-# Source: cert-manager/templates/rbac.yaml
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: cert-manager
-  labels:
-    app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
-rules:
-  - apiGroups: ["certmanager.k8s.io"]
-    resources: ["certificates", "issuers", "clusterissuers"]
-    verbs: ["*"]
-  - apiGroups: [""]
-    resources: ["secrets", "events", "endpoints", "services", "pods"]
-    verbs: ["*"]
-  - apiGroups: ["extensions"]
-    resources: ["ingresses"]
-    verbs: ["*"]
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: cert-manager
-  labels:
-    app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cert-manager
-subjects:
-  - name: cert-manager
-    namespace: testing
-    kind: ServiceAccount
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: cert-manager
-  labels:
-    app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
-envsubst < manifests/deployment.yaml
-##---
-# Source: cert-manager/templates/deployment.yaml
-apiVersion: apps/v1beta1
-kind: Deployment
-metadata:
-  name: cert-manager
-  labels:
-    app: cert-manager
-    chart: cert-manager-0.2.1
-    release: cert-manager
-    heritage: Tiller
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: cert-manager
-        release: cert-manager
-    spec:
-      serviceAccountName: cert-manager
-      containers:
-        - name: cert-manager
-          image: "quay.io/jetstack/cert-manager-controller:v0.2.3"
-          imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              cpu: 10m
-              memory: 32Mi
-
-        - name: ingress-shim
-          image: "quay.io/jetstack/cert-manager-ingress-shim:v0.2.3"
-          imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              cpu: 10m
-              memory: 32Mi
-````
-
-## See also
-
-* https://github.com/mateothegreat/k8-byexamples-ingress-controller

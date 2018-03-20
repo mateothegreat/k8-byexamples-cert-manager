@@ -13,5 +13,7 @@ HOST            ?= k8.yomateo.io
 EMAIL           ?= matthew@matthewdavis.io
 export
 
+## Creates a new Certificate request (make certificate-issue NS=somenamespace HOST=foo.bar.com)
 certificate-issue:  guard-HOST; @envsubst < templates/certificate.yaml | kubectl -n $$NS apply -f -
+## Deletes Certificate request (make certificate-issue NS=somenamespace HOST=foo.bar.com)
 certificate-delete:	guard-HOST; @envsubst < templates/certificate.yaml | kubectl -n $$NS delete --ignore-not-found -f -
