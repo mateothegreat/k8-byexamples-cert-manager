@@ -29,7 +29,7 @@ metadata:
   name: letsencrypt-staging-cluster-issuer
 spec:
   acme:
-    server: https://acme-staging.api.letsencrypt.org/directory
+    server: https://acme-v01.api.letsencrypt.org/directory
     email: $EMAIL
     privateKeySecretRef:
       name: letsencrypt-staging

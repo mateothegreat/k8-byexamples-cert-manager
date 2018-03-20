@@ -13,8 +13,5 @@ HOST            ?= k8.yomateo.io
 EMAIL           ?= matthew@matthewdavis.io
 export
 
-logs: ;	kubectl --namespace $(NS) logs -f $(shell kubectl get pods --all-namespaces -lapp=$(APP) -o jsonpath='{.items[0].metadata.name}') -c cert-manager
-
-new:
-
-	@envsubst < templates/certificate.yaml | kubectl -n $$NS apply -f -
+certificate-issue:  guard-HOST; @envsubst < templates/certificate.yaml | kubectl -n $$NS apply -f -
+certificate-delete:	guard-HOST; @envsubst < templates/certificate.yaml | kubectl -n $$NS delete --ignore-not-found -f -
