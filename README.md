@@ -20,6 +20,15 @@ Waiting on pull request https://github.com/jetstack/cert-manager/pull/309 which 
 
 Certificate management as easy as a spec. Goes well with https://github.com/mateothegreat/k8-byexamples-ingress-controller.
 
+# Getting started
+
+Clone this repo and initialize submodules:
+
+```bash
+git clone https://github.com/mateothegreat/k8-byexamples-cert-manager && cd $_
+git submodule update --init
+```
+
 ## Usage
 
 Run `make install` and you're ready to start creating certificate requests.
