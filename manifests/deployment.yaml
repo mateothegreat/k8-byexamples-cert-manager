@@ -1,5 +1,5 @@
 ##---
-# Source: cert-manager/templates/deployment.yaml
+# Source: cert-manager/templates/web-deployment.yaml
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:

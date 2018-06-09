@@ -1,4 +1,16 @@
-##---
+---
+# Source: cert-manager/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cert-manager
+  namespace: "kube-system"
+  labels:
+    app: cert-manager
+    chart: cert-manager-v0.3.2
+    release: cert-manager
+    heritage: Tiller
+---
 # Source: cert-manager/templates/rbac.yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -6,12 +18,20 @@ metadata:
   name: cert-manager
   labels:
     app: cert-manager
+    chart: cert-manager-v0.3.2
+    release: cert-manager
+    heritage: Tiller
 rules:
   - apiGroups: ["certmanager.k8s.io"]
     resources: ["certificates", "issuers", "clusterissuers"]
     verbs: ["*"]
   - apiGroups: [""]
-    resources: ["configmaps", "secrets", "events", "endpoints", "services", "pods"]
+    # TODO: remove endpoints once 0.4 is released. We include it here in case
+    # users use the 'master' version of the Helm chart with a 0.2.x release of
+    # cert-manager that still performs leader election with Endpoint resources.
+    # We advise users don't do this, but some will anyway and this will reduce
+    # friction.
+    resources: ["endpoints", "configmaps", "secrets", "events", "services", "pods"]
     verbs: ["*"]
   - apiGroups: ["extensions"]
     resources: ["ingresses"]
@@ -23,18 +43,14 @@ metadata:
   name: cert-manager
   labels:
     app: cert-manager
+    chart: cert-manager-v0.3.2
+    release: cert-manager
+    heritage: Tiller
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: cert-manager
 subjects:
   - name: cert-manager
-    namespace: $NS
+    namespace: "kube-system"
     kind: ServiceAccount
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: cert-manager
-  labels:
-    app: cert-manager
