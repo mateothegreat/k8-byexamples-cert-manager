@@ -4,8 +4,8 @@ metadata:
   name: letsencrypt-staging-cluster-issuer
 spec:
   acme:
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
-    email: matthew@matthewdavis.io
+    server: https://acme-v01.api.letsencrypt.org/directory
+    email: $EMAIL
     privateKeySecretRef:
       name: letsencrypt-staging
     http01: {}
